@@ -23,17 +23,29 @@ __device__ __inline__ at::Half __shfl_up(const at::Half var,
   return __shfl_up(var.operator __half(), delta);
 }
 
+__device__ __inline__ at::Half __shfl_up(const at::Half var,
+                                         const unsigned int delta,
+                                         const int width) {
+  return __shfl_up(var.operator __half(), delta, width);
+}
+
 __device__ __inline__ at::Half __shfl_down(const at::Half var,
                                            const unsigned int delta) {
   return __shfl_down(var.operator __half(), delta);
+}
+
+__device__ __inline__ at::Half __shfl_down(const at::Half var,
+                                           const unsigned int delta,
+                                           const int width) {
+  return __shfl_down(var.operator __half(), delta, width);
 }
 
 #ifdef USE_ROCM
 __device__ __inline__ at::Half __ldg(const at::Half* ptr) {
   return __ldg(reinterpret_cast<const __half*>(ptr));
 }
-#define SHFL_UP_SYNC(mask, var, delta) __shfl_up(var, delta)
-#define SHFL_DOWN_SYNC(mask, var, delta) __shfl_down(var, delta)
+#define SHFL_UP_SYNC(mask, var, delta) __shfl_up(var, delta, warpSize)
+#define SHFL_DOWN_SYNC(mask, var, delta) __shfl_down(var, delta, warpSize)
 #else
 #define SHFL_UP_SYNC __shfl_up_sync
 #define SHFL_DOWN_SYNC __shfl_down_sync

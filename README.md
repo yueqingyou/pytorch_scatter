@@ -41,6 +41,42 @@ All included operations are broadcastable, work on varying data types, are imple
 
 ## Installation
 
+### DCU (Hygon) Environment
+
+For DCU (Hygon DCU with ROCm/HIP) environments, additional modifications are required to resolve warp shuffle function ambiguities.
+
+**Tested Environment:**
+- PyTorch: 2.4.1
+- OS: Ubuntu 22.04
+- DTK: 25.04.1
+- Python: 3.10
+
+**Installation Steps:**
+
+1. Clone this repository:
+```bash
+git clone https://github.com/yueqingyou/pytorch_scatter.git
+cd pytorch_scatter
+```
+
+2. The required DCU compatibility fixes have been applied to `csrc/cuda/utils.cuh`:
+   - Added three-parameter overloads for `__shfl_up` and `__shfl_down` functions for `at::Half` type
+   - Modified USE_ROCM macro definitions to use three-parameter versions with `warpSize`
+
+3. Build and install:
+```bash
+FORCE_CUDA=1 pip install . --no-build-isolation
+```
+
+4. Verify installation:
+```python
+import torch
+import torch_scatter
+print(f"torch_scatter version: {torch_scatter.__version__}")
+```
+
+**Note:** These modifications resolve `__shfl_up` and `__shfl_down` function call ambiguities that occur in DCU/HIP environments during compilation.
+
 ### Binaries
 
 We provide pip wheels for all major OS/PyTorch/CUDA combinations, see [here](https://data.pyg.org/whl).
